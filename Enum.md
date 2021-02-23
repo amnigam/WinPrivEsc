@@ -503,6 +503,13 @@ Port   Protocol  Mode    Traffic direction     Name
 I have snipped out the output to make it snappier. But there is more output relating to ports etc.
 
 
+5. Dump all firewall rules
+
+> **netsh advfirewall firewall show rule name=all > firewall-rules.txt**
+
+This will take all firewall rules and copy it in a separate file (firewall-rules.txt)
+
+
 
 # Final Words
 --------------
