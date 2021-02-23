@@ -368,7 +368,7 @@ This will search for string password in all .txt files.
 
 2. Searching for any type of file through CMD
 
-> ** dir \*.txt /s /p**
+> **dir \*.txt /s /p**
 
 This will search for all files of type .txt from the folder from where this command is executed. 
 
