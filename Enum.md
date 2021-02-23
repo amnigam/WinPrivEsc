@@ -4,56 +4,64 @@ List of commands for various types of Windows Enumeration
 ---------------------
 
 1. Systeminfo
-> c:\windows\system32\inetsrv>systeminfo     
-> Host Name:                 DEVEL   
-> OS Name:                   Microsoft Windows 7 Enterprise   
-> OS Version:                6.1.7600 N/A Build 7600   
-> OS Manufacturer:           Microsoft Corporation   
+
+> **systeminfo**
+
+``` 
+Host Name:                 DEVEL   
+OS Name:                   Microsoft Windows 7 Enterprise   
+OS Version:                6.1.7600 N/A Build 7600   
+OS Manufacturer:           Microsoft Corporation   
+```
 
 And so on the output continues. 
 
 We can refine this research to bring out a few of the more important parameters from our results by
 
-> c:\windows\system32\inetsrv>systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"
+> **systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"**
 
 And the following is going to be the output of this   
-> systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"  
-> OS Name:                   Microsoft Windows 7 Enterprise   
-> OS Version:                6.1.7600 N/A Build 7600   
-> System Type:               X86-based PC  
-
+```
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"  
+OS Name:                   Microsoft Windows 7 Enterprise   
+OS Version:                6.1.7600 N/A Build 7600   
+System Type:               X86-based PC  
+```
 
 
 2. Get Patching Information from WMIC
-> c:\wmic qfe
+
+> **wmic qfe**
 
 This gives us the "quick fix engineering" or hot fixes via the Windows Management Instrumentation service - the c stands for command line
 We can further narrow down our search by specifying exactly what is it that we want
 
-> C:\Users\ACER>wmic qfe get Caption,Description,HotFixID,InstalledOn
+> **wmic qfe get Caption,Description,HotFixID,InstalledOn**
 
 And an output along these lines will show up
-> Caption                                     Description      HotFixID   InstalledOn   
-> http://support.microsoft.com/?kbid=4601056  Update           KB4601056  2/11/2021  
-> http://support.microsoft.com/?kbid=4497165  Update           KB4497165  5/23/2020  
-
+```
+Caption                                     Description      HotFixID   InstalledOn   
+http://support.microsoft.com/?kbid=4601056  Update           KB4601056  2/11/2021  
+http://support.microsoft.com/?kbid=4497165  Update           KB4497165  5/23/2020  
+```
 
 3. Listing Drives on the Box
 For this we can utilize 2 commands
 
-> list drives
+> **list drives**  
 This one might or might not work.
 
 The other command utilizes the WMIC service and can be used to pull down the Drives information. 
 
-> wmic logicaldisk get Caption,Description,ProviderName   
+> **wmic logicaldisk get Caption,Description,ProviderName**  
 
 And you will get an output like this one
-> C:\Users\ACER>wmic logicaldisk get Caption,Description,ProviderName  
-> Caption  Description       ProviderName  
-> C:       Local Fixed Disk  
-> D:       Local Fixed Disk  
-
+```
+C:\Users\ACER>wmic logicaldisk get Caption,Description,ProviderName  
+Caption  Description       ProviderName  
+C:       Local Fixed Disk  
+D:       Local Fixed Disk  
+```
 
 
 # User Enumeration
@@ -61,34 +69,35 @@ And you will get an output like this one
 
 Listing of commands that can be utilized to enumerate a User on a given box.
 
-1. WHOAMI
+1. **WHOAMI**  
 
 
 2. To list all the privileges associated with a given user
 
-> whoami /priv
+> **whoami /priv**  
 
 This will give us the privileges associated with the user that we are logged in with.
 
-> ** PRIVILEGES INFORMATION **  
+```
+** PRIVILEGES INFORMATION **  
 
-> Privilege Name                Description                               State     
-> ============================= ========================================= ========  
-> SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled  
-> SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Disabled  
-> SeShutdownPrivilege           Shut down the system                      Disabled  
-> SeAuditPrivilege              Generate security audits                  Disabled  
-> SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled   
-> SeUndockPrivilege             Remove computer from docking station      Disabled  
-> SeImpersonatePrivilege        Impersonate a client after authentication Enabled   
-> SeCreateGlobalPrivilege       Create global objects                     Enabled   
-> SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled  
-> SeTimeZonePrivilege           Change the time zone                      Disabled  
-
+Privilege Name                Description                               State     
+============================= ========================================= ========  
+SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled  
+SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Disabled  
+SeShutdownPrivilege           Shut down the system                      Disabled  
+SeAuditPrivilege              Generate security audits                  Disabled  
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled   
+SeUndockPrivilege             Remove computer from docking station      Disabled  
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled   
+SeCreateGlobalPrivilege       Create global objects                     Enabled   
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled  
+SeTimeZonePrivilege           Change the time zone                      Disabled  
+```
 
 3. List all Group Memberships for the logged on user
 
-> whoami /groups
+> **whoami /groups**
 
 ```
 Group Name                           Type             SID          Attributes                                        
@@ -106,7 +115,7 @@ LOCAL                                Well-known group S-1-2-0      Mandatory gro
 ```
 
 4. To list **users** on a machine or a box we use
-> net user
+> **net user**
 
 This will give us a listing of **all** users on a box or machine.
 
@@ -124,7 +133,7 @@ The command completed with one or more errors.
 
 Continuing from our previous example - suppose we want more information about "babis" user then we can do
 
-> net user babis
+> **net user babis**
 
 This will give
 ```
@@ -164,12 +173,12 @@ We can see a whole bunch of information along with the memberships for this user
 
 We can also list the groups available on the box with 
 
-> net localgroup
+> **net localgroup**
 
 However, this command might or might not work. 
 In case if we know the groups that exist on a system e.g. by doing net user *username* on that box. We can then ascertain the nature of that group. 
 
-> net localgroup administrators
+> **net localgroup administrators**
 
 ```
 C:\Users\ACER>net localgroup Administrators
@@ -192,14 +201,14 @@ This way we can find out memberships of Users in key groups.
 
 Network enumeration begins with standard IPCONFIG which will reveal the IP address along with DNS and other related parameters.
 
-1. IPCONFIG
+1. **IPCONFIG**
 
 This gives basic information about network related items.
 
 
 2. IPCONFIG /ALL
 
-> ipconfig /all
+> **ipconfig /all**
 
 This provides a whole host of information relating to network e.g. DHCP, DNS, Host details, Network IPs etc.
 ```
@@ -242,7 +251,7 @@ This information is critical - sometimes the Domain Controller does DNS and by k
 The ARP information can reveal other machines or boxes on the same network. 
 We can get that information through 
 
-> arp -a
+> **arp -a**
 
 Continuing with our example - we have the following
 ```
@@ -264,7 +273,7 @@ Interface: 10.10.10.5 --- 0xf
 
   We can print the Route details for a given box with the following command
 
-  > route print
+  > **route print**
 
   ```
   c:\windows\system32\inetsrv>route print
@@ -306,7 +315,7 @@ Persistent Routes:
 
 Sometimes certain ports are open and are visible only from the inside. These ports might not be revealed in an NMAP scan and hence it is important to understand what kind of services are running internally and are not visible from outside. NETSTAT can help us in identifying these ports and related traffic.
 
-> netstat -ano
+> **netstat -ano**
 
 ```
 c:\windows\system32\inetsrv>netstat -ano
@@ -330,7 +339,25 @@ Active Connections
   ```
 
   I have only put in a short sample of the output. But you get the idea.
-  
+
+
+
+
+# Basic Password Hunting
+---------------------------
+
+Here we will do some basic password hunting to supplement the Tools that we will utilize as part of enumeration.
+
+A lot of the content is available on the following link *https://sushant747.gitbooks.io/total-oscp-guide/content/privilege_escalation_windows.html*   
+It has some very nice notes that we can leverage as well. 
+
+However here are some of the things that I found
+
+1. Basic String search 
+
+> **findstr /si password \*.txt**
+
+This will search for string password in all .txt files.
 
 
 
