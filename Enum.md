@@ -407,7 +407,7 @@ c:\windows\system32\inetsrv>
 
 We can query all services on Service center and then pick out the one that we want to query in depth later.
 
-> ** sc queryex type= service**
+> **sc queryex type= service**
 
 This will produce a humongous output - I am only showing the most basic snipped version 
 
@@ -543,7 +543,7 @@ You can look at these further.
 
 Similarly for WMIC you can get information on similar lines. 
 
-> ** wmic /?** 
+> **wmic /?** 
 
 This will list all the aliases associated with this service. Then for each of those aliases you can further query the help menus. 
 
