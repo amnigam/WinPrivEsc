@@ -1,3 +1,9 @@
+Before I begin I also want to highlight a wonderful resource relating to Windows PrivEsc -- PayloadAllThings
+```
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md#user-enumeration
+```
+
+
 List of commands for various types of Windows Enumeration
 
 # System Enumeration
@@ -358,6 +364,241 @@ However here are some of the things that I found
 > **findstr /si password \*.txt**
 
 This will search for string password in all .txt files.
+
+
+2. Searching for any type of file through CMD
+
+> ** dir \*.txt /s /p**
+
+This will search for all files of type .txt from the folder from where this command is executed. 
+
+
+
+
+# Basic Firewall & AV Enumeration
+---------------------------------
+
+Again refer to PayloadAllThings & Sushant's guide for more info. I am just making some very basic notes.
+
+1. Query Service Center for info on WinDefend
+
+> **sc query windefend**
+
+This will give you info on whether the windows defender is running or not. Here is the output of that command
+
+```
+c:\windows\system32\inetsrv>sc query windefend
+sc query windefend
+
+SERVICE_NAME: windefend 
+        TYPE               : 20  WIN32_SHARE_PROCESS  
+        STATE              : 4  RUNNING 
+                                (STOPPABLE, NOT_PAUSABLE, ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+
+c:\windows\system32\inetsrv>
+```
+
+
+2. Query All Services on Service Center
+
+We can query all services on Service center and then pick out the one that we want to query in depth later.
+
+> ** sc queryex type= service**
+
+This will produce a humongous output - I am only showing the most basic snipped version 
+
+```
+c:\windows\system32\inetsrv>sc queryex type= service
+sc queryex type= service
+
+SERVICE_NAME: AppHostSvc
+DISPLAY_NAME: Application Host Helper Service
+        TYPE               : 20  WIN32_SHARE_PROCESS  
+        STATE              : 4  RUNNING 
+                                (STOPPABLE, PAUSABLE, ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+        PID                : 1344
+        FLAGS              : 
+
+SERVICE_NAME: AudioEndpointBuilder
+DISPLAY_NAME: Windows Audio Endpoint Builder
+```
+
+
+3. Use NETSH for Firewall Checks
+
+We can use the NETSH utility to do further enumeration. Go through the NETSH help utility carefully
+
+> **netsh firewall show state**
+
+This will give a state of the firewall on the box. Here is the output 
+
+```
+c:\windows\system32\inetsrv>netsh firewall show state
+netsh firewall show state
+
+Firewall status:
+-------------------------------------------------------------------
+Profile                           = Standard
+Operational mode                  = Enable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+Group policy version              = Windows Firewall
+Remote admin mode                 = Disable
+
+Ports currently open on all network interfaces:
+Port   Protocol  Version  Program
+-------------------------------------------------------------------
+No ports are currently open on all network interfaces.
+
+IMPORTANT: Command executed successfully.
+However, "netsh firewall" is deprecated;
+use "netsh advfirewall firewall" instead.
+For more information on using "netsh advfirewall firewall" commands
+instead of "netsh firewall", see KB article 947709
+at http://go.microsoft.com/fwlink/?linkid=121488 .
+```
+
+
+
+> **netsh advfirewall firewall dump** 
+
+This is a more modern version of the NETSH command for the same purpose.
+
+
+4. Use NETSH for firewall config
+
+> **netsh firewall show config**
+
+This will pull down the configuration for the firewall
+
+```
+c:\windows\system32\inetsrv>netsh firewall show config
+netsh firewall show config
+
+Domain profile configuration:
+-------------------------------------------------------------------
+Operational mode                  = Enable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+
+Allowed programs configuration for Domain profile:
+Mode     Traffic direction    Name / Program
+-------------------------------------------------------------------
+
+Port configuration for Domain profile:
+Port   Protocol  Mode    Traffic direction     Name
+-------------------------------------------------------------------
+```
+
+I have snipped out the output to make it snappier. But there is more output relating to ports etc.
+
+
+
+# Final Words
+--------------
+
+There are certain services like 
+1. NETSH
+2. SC 
+3. WMIC
+4. NET USER
+
+All of these services - they have their own individual help contexts that one can leverage to get more information. 
+As an example
+
+> **netsh firewall ?**
+
+This will bring down its own help menu for firewall related commands.
+
+```
+c:\windows\system32\inetsrv>netsh firewall ?
+netsh firewall ?
+
+The following commands are available:
+
+Commands in this context:
+?              - Displays a list of commands.
+add            - Adds firewall configuration.
+delete         - Deletes firewall configuration.
+dump           - Displays a configuration script.
+help           - Displays a list of commands.
+set            - Sets firewall configuration.
+show           - Shows firewall configuration.
+
+To view help for a command, type the command, followed by a space, and then
+ type ?.
+```
+
+You can look at these further. 
+
+Similarly for WMIC you can get information on similar lines. 
+
+> ** wmic /?** 
+
+This will list all the aliases associated with this service. Then for each of those aliases you can further query the help menus. 
+
+
+And we can query for Service Center as well.
+
+> **sc ?**
+
+This lists all service center options along with query & queryex (ex stands for extended)
+
+```
+DESCRIPTION:
+        SC is a command line program used for communicating with the
+        Service Control Manager and services.
+USAGE:
+        sc <server> [command] [service name] <option1> <option2>...
+
+
+        The option <server> has the form "\\ServerName"
+        Further help on commands can be obtained by typing: "sc [command]"
+        Commands:
+          query-----------Queries the status for a service, or
+                          enumerates the status for types of services.
+          queryex---------Queries the extended status for a service, or
+                          enumerates the status for types of services.
+          start-----------Starts a service.
+          pause-----------Sends a PAUSE control request to a service.
+          interrogate-----Sends an INTERROGATE control request to a service.
+          continue--------Sends a CONTINUE control request to a service.
+          stop------------Sends a STOP request to a service.
+          config----------Changes the configuration of a service (persistent).
+          description-----Changes the description of a service.
+          failure---------Changes the actions taken by a service upon failure.
+```
+
+I have only taken a part of the output. 
+Keep all of this in mind when you are doing any kind of enumeration. 
+
+Even the NET USER and the NET command itself has a host of options.
+
+> **net ?**
+
+This reveals the true amount of options that we have which includes the USER category that we use so often.
+
+```
+C:\WINDOWS\system32>net ?
+The syntax of this command is:
+
+NET
+    [ ACCOUNTS | COMPUTER | CONFIG | CONTINUE | FILE | GROUP | HELP |
+      HELPMSG | LOCALGROUP | PAUSE | SESSION | SHARE | START |
+      STATISTICS | STOP | TIME | USE | USER | VIEW ]
+```
+
+
 
 
 
