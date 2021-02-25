@@ -3,8 +3,8 @@
 
 This document captures in my preparation journey various Escalation Paths in Windows to get to Authority \ System.  
 A couple of golden resources that you need to be aware of and should be referenced frequently 
-- https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
-- https://sushant747.gitbooks.io/total-oscp-guide/content/privilege_escalation_windows.html
+- [title] https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md
+- [title] https://sushant747.gitbooks.io/total-oscp-guide/content/privilege_escalation_windows.html
 
 ### Escalation Path 1 - Kernel Exploits
 ----------------------------------------
