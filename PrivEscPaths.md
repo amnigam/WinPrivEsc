@@ -1,5 +1,5 @@
 # Windows Escalation Paths
----------------------------
+---
 
 This document captures in my preparation journey various Escalation Paths in Windows to get to Authority \ System.  
 A couple of golden resources that you need to be aware of and should be referenced frequently 
@@ -10,7 +10,8 @@ A couple of golden resources that you need to be aware of and should be referenc
 
 
 ### Reverse Shell - Couple of Methods
---------------------------------------
+---
+
 
 1. **Method1** Generate a reverse shell executable through any standard payload 
 
@@ -64,7 +65,8 @@ In here we are generating an EXE file which then needs to be run at the target b
 
 
 ### Escalation Path 1 - Kernel Exploits
-----------------------------------------
+---
+
 
 Kernel exploits present a very powerful way to escalate your privileges as it works directly with a kernel. Normally, you run a binary/executable and that should give you some kind of escalation of privileges on the box. 
 
@@ -88,7 +90,7 @@ https://github.com/SecWiki/windows-kernel-exploits
 
 
 ### Escalation Path 2 - Insecure Service Permissions
-------------------------------------------------------
+---
 
 
 Use accesschk.exe to check for a given user's access on a suspicious service - something that will get flagged with PowerUp.ps1
@@ -128,7 +130,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 
 ### Escalation Path 3 - Unquoted Service Paths
---------------------------------------------------
+---
 
 
 **Step 1:** Query the "unquotedsvc" service and note that it runs with SYSTEM privileges (SERVICE_START_NAME) and that the BINARY_PATH_NAME is unquoted and contains spaces.
@@ -165,7 +167,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 
 ### Escalation Path 4 - Weak Registry Permissions
----------------------------------------------------
+---
 
 
 **Step 1:** Query the culprit service (e.g. regsvc) and note that it run with SYSTEM privileges (SERVICE_START_NAME)
@@ -197,7 +199,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 
 ### Escalation Path 5 - Insecure Service Executables
-------------------------------------------------------
+---
 
 
 **Step 1:** Query the culprit service (e.g. filepermsvc here) and note that it runs with SYSTEM privileges (SERVICE_START_NAME)
@@ -228,7 +230,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 
 
 ### Escalation Path 6 - Registry Autoruns
--------------------------------------------
+---
 
   
 **Step 1:** Query the registry for AutoRun executables
@@ -278,6 +280,7 @@ Start a listener on Kali and then start the service to spawn a reverse shell run
 **Step 5:** Start a listener on Kali and then run the installer to trigger the reverse shell
 
 > **msiexec /quiet /qn /i C:\PrivEsc\reverse.msi**
+
 
 
 
