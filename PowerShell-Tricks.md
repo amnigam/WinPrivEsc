@@ -122,7 +122,7 @@ This is very useful!
 In this section the idea is to filter a very specific object from a list of objects returned. 
 The General Format for this is as follows
 
-> **Verb-Noun | Where-Object -Property PropertyName -operator Value**
+> **Verb-Noun | Where-Object -Property PropertyName -operator Value**    
 > **Verb-Noun | Where-Object {$_.PropertyName -operator Value}**
 
 The second version uses the $_ operator to iterate through every object passed to the Where-Object cmdlet.
