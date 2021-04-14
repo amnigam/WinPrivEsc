@@ -213,4 +213,49 @@ In our case here, the same was also performed by the previous command. However, 
 \
 \
 
+### 5. Sorting
+Sometimes a command like Get-Service might return a lot of objects back in the result. In case if we need to sort this then we can use Sort-Object to do so.
+
+Format is like this   
+   
+> **Verb-Noun | Sort-Object**
+
+As an example we can see here
+```
+PS C:\Users\Administrator> get-service | Where-Object {$_.CanShutDown -eq 'Yes'} | Sort-Object
+
+Status   Name               DisplayName
+------   ----               -----------
+Running  AmazonSSMAgent     Amazon SSM Agent
+Running  AWSLiteAgent       AWS Lite Guest Agent
+Running  CertPropSvc        Certificate Propagation
+Running  CryptSvc           Cryptographic Services
+Running  Dhcp               DHCP Client
+Running  DPS                Diagnostic Policy Service
+Running  DsmSvc             Device Setup Manager
+Running  EventLog           Windows Event Log
+Running  FontCache          Windows Font Cache Service
+Running  MSDTC              Distributed Transaction Coordinator
+Running  PcaSvc             Program Compatibility Assistant Ser...
+Running  PlugPlay           Plug and Play
+Running  ProfSvc            User Profile Service
+Running  Schedule           Task Scheduler
+Running  StateRepository    State Repository Service
+Running  TermService        Remote Desktop Services
+Running  TrkWks             Distributed Link Tracking Client
+Running  UmRdpService       Remote Desktop Services UserMode Po...
+Running  VaultSvc           Credential Manager
+Running  W32Time            Windows Time
+Running  Wcmsvc             Windows Connection Manager
+Running  WinDefend          Windows Defender Service
+Running  Winmgmt            Windows Management Instrumentation
+Running  WinRM              Windows Remote Management (WS-Manag...
+```
+
+\
+\
+\
+\
+
+
 
